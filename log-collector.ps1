@@ -10,18 +10,16 @@ Last Modified: 4/7/2022
 
 using namespace System.Management.Automation.Host
 
-#Function declerations for account activity event IDs.
+# Function declerations for account activity event IDs.
 #-----------------------------------------------------------------------------------------------------------------------------------------
 function Get-AccountActivity {
-    #Check if account activity folder exists. Create if it doesn't. 
+    # Check if account activity folder exists. Create if it doesn't. 
     $local:Dir = "C:\collections\account_activity"
-    if (Test-Path -Path $local:Dir) {
-
-    } else {
+    if (-Not (Test-Path -Path $local:Dir)) { # TODO: Seems like this if logic is repeadted in a lot of functions. Maybe pull to it's own function?
         New-Item -Path "c:\collections" -Name "account_activity" -ItemType Directory
     }
     
-    #Find specific account event IDs and export them to CSV.
+    # Find specific account event IDs and export them to CSV.
     Get-EventLog -LogName Security | Where-Object {$_.EventID -eq 4624} | Export-Csv "C:\collections\account_activity\successful_signins.csv"
     Get-EventLog -LogName Security | Where-Object {$_.EventID -eq 4634} | Export-Csv "C:\collections\account_activity\successful_logoffs.csv"
     Get-EventLog -LogName Security | Where-Object {$_.EventID -eq 4740} | Export-Csv "C:\collections\account_activity\account_lockouts.csv"
@@ -29,44 +27,36 @@ function Get-AccountActivity {
 }
 
 function Get-SigninActivity {
-    #Check if account activity folder exists. Create if it doesn't. 
+    # Check if account activity folder exists. Create if it doesn't. 
     $local:Dir = "C:\collections\account_activity"
-    if (Test-Path -Path $local:Dir) {
-
-    } else {
+    if (-Not (Test-Path -Path $local:Dir)) {
         New-Item -Path "c:\collections" -Name "account_activity" -ItemType Directory
     }
     Get-EventLog -LogName Security | Where-Object {$_.EventID -eq 4624} | Export-Csv "C:\collections\account_activity\successful_signins.csv"
 }
 
 function Get-SignoffActivity {
-    #Check if account activity folder exists. Create if it doesn't. 
+    # Check if account activity folder exists. Create if it doesn't. 
     $local:Dir = "C:\collections\account_activity"
-    if (Test-Path -Path $local:Dir) {
-
-    } else {
+    if (-Not (Test-Path -Path $local:Dir)) {
         New-Item -Path "c:\collections" -Name "account_activity" -ItemType Directory
     }
     Get-EventLog -LogName Security | Where-Object {$_.EventID -eq 4634} | Export-Csv "C:\collections\account_activity\successful_logoffs.csv"
 }
 
 function Get-LockoutActivity {
-    #Check if account activity folder exists. Create if it doesn't. 
+    # Check if account activity folder exists. Create if it doesn't. 
     $local:Dir = "C:\collections\account_activity"
-    if (Test-Path -Path $local:Dir) {
-
-    } else {
+    if (-Not (Test-Path -Path $local:Dir)) {
         New-Item -Path "c:\collections" -Name "account_activity" -ItemType Directory
     }
     Get-EventLog -LogName Security | Where-Object {$_.EventID -eq 4740} | Export-Csv "C:\collections\account_activity\account_lockouts.csv"
 }
 
 function Get-FailedActivity {
-    #Check if account activity folder exists. Create if it doesn't. 
+    # Check if account activity folder exists. Create if it doesn't. 
     $local:Dir = "C:\collections\account_activity"
-    if (Test-Path -Path $local:Dir) {
-
-    } else {
+    if (-Not (Test-Path -Path $local:Dir)) {
         New-Item -Path "c:\collections" -Name "account_activity" -ItemType Directory
     }
     Get-EventLog -LogName Security | Where-Object {$_.EventID -eq 4625} | Export-Csv "C:\collections\account_activity\failed_logins.csv"
@@ -77,24 +67,22 @@ function Get-FailedActivity {
 #Function declerations for scheduled tasks.
 #-----------------------------------------------------------------------------------------------------------------------------------------
 function Get-TaskActivity {
-    #Check if scheduled tasks folder exists. Create if it doesn't.
+    # Check if scheduled tasks folder exists. Create if it doesn't.
     $local:Dir = "C:\collections\scheduled_tasks"
-    if (Test-Path -Path $local:Dir) {
-
-    } else {
+    if (-Not (Test-Path -Path $local:Dir)) {
         New-Item -Path "c:\collections" -Name "scheduled_tasks" -ItemType Directory
     }
-    #Find specific scheduled task event IDs and export them to CSV.
+    # Find specific scheduled task event IDs and export them to CSV.
     Get-EventLog -LogName Security | Where-Object {$_.EventID -eq 4698} | Export-Csv "C:\collections\scheduled_tasks\task_created.csv"
     Get-EventLog -LogName Security | Where-Object {$_.EventID -eq 4699} | Export-Csv "C:\collections\scheduled_tasks\task_deleted.csv"
 }
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
 
-#Event Log Handling
+# Event Log Handling
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
-#Export System logs
+# Export System logs
 function Get-SystemLogs {
     $systemlog = Get-WmiObject -Class Win32_NTEventlogFile | Where-Object LogfileName -EQ 'System' 
     $systemlog.BackupEventlog('c:\collections\event_logs\system.evtx')
@@ -102,7 +90,7 @@ function Get-SystemLogs {
     Start-Cleanup
 }
 
-#Export Application logs
+# Export Application logs
 function Get-ApplicationLogs {
     $applicationlog = Get-WmiObject -Class Win32_NTEventlogFile | Where-Object LogfileName -EQ 'Application' 
     $applicationlog.BackupEventlog('c:\collections\event_logs\application.evtx')
@@ -110,7 +98,7 @@ function Get-ApplicationLogs {
     Start-Cleanup
 }
 
-#Export Security logs
+# Export Security logs
 function Get-SecurityLogs {
     $securitylog = Get-WmiObject -Class Win32_NTEventlogFile | Where-Object LogfileName -EQ 'Security' 
     $securitylog.BackupEventlog('c:\collections\event_logs\security.evtx')
@@ -130,13 +118,11 @@ function Get-AllLogs {
 }
 
 
-#Function Decleration for getting a specific event ID. Exports to CSV.
+# Function Decleration for getting a specific event ID. Exports to CSV.
 #-----------------------------------------------------------------------------------------------------------------------------------------
 function Get-EventID{
     $local:Dir = "C:\collections\events"
-    if (Test-Path -Path $local:Dir) {
-
-    } else {
+    if (-Not (Test-Path -Path $local:Dir)) {
         New-Item -Path "c:\collections" -Name "events" -ItemType Directory
     }
     Clear-Host
@@ -149,7 +135,7 @@ function Get-EventID{
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
-#Compress event logs
+# Compress event logs
 function Compress-Logs {
     $compress = @{
         Path = "C:\collections\event_logs\*.evtx"
@@ -161,18 +147,18 @@ function Compress-Logs {
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
 
-#Cleanup
+# Cleanup
 #-----------------------------------------------------------------------------------------------------------------------------------------
 function Start-Cleanup {
-    #Remove original event log files after compression.
+    # Remove original event log files after compression.
     Get-ChildItem -Path 'C:\collections\event_logs\' *.evtx | ForEach-Object { Remove-Item -Path $_.FullName }
 }
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
-#Menus
+# Menus
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
-#Main Menu
+# Main Menu
 function Start-MainMenu {
     param (
         [string]$Title = 'Log Collector'
@@ -189,7 +175,7 @@ function Start-MainMenu {
     Write-Host "Q: Press 'Q' to quit."
 }
 
-#Menu for event log exporting (Evtx).
+# Menu for event log exporting (Evtx).
 function Start-EventMenu {
     [CmdletBinding()]
     param(
@@ -221,7 +207,7 @@ function Start-EventMenu {
 
 }
 
-#Menu for handling account related activites.
+# Menu for handling account related activites.
 function Start-AccountMenu {
     [CmdletBinding()]
     param(
@@ -240,8 +226,6 @@ function Start-AccountMenu {
     $lockoutLogs = [ChoiceDescription]::new('&Lockout', 'Collects all lockout events.')
     $allActivity = [ChoiceDescription]::new('&All', 'Collects all account related events.')
 
-    
-
     $options = [ChoiceDescription[]]($signonLogs, $signoffLogs, $failedLogs, $lockoutLogs, $allActivity)
 
     $result = $host.ui.PromptForChoice($Title, $Question, $options, 0)
@@ -258,7 +242,7 @@ function Start-AccountMenu {
 
 #-----------------------------------------------------------------------------------------------------------------------------------------
 
-#Main Loop
+# Main Loop
 #-----------------------------------------------------------------------------------------------------------------------------------------
 function Start-MainLoop {
     $global:workingDir = "c:\collections"
@@ -270,27 +254,25 @@ function Start-MainLoop {
         New-Item -Path "c:\collections" -Name "event_logs" -ItemType Directory
         
     }
-    
 
-    do
+    while($selection -eq 'q')
     {
         Start-MainMenu
         $selection = Read-Host "Please make a selection"
         switch ($selection)
         {
-        '1' {
-            Start-AccountMenu -Title 'Account Logs' -Question 'Which account logs would you like to export?'
-        } '2' {
-            Start-EventMenu -Title 'Event Logs' -Question 'Which event log would you like to export?'
-        } '3' {
-            Get-TaskActivity
-        } '4' {
-            Get-EventID
-        }
+            '1' {
+                Start-AccountMenu -Title 'Account Logs' -Question 'Which account logs would you like to export?'
+            } '2' {
+                Start-EventMenu -Title 'Event Logs' -Question 'Which event log would you like to export?'
+            } '3' {
+                Get-TaskActivity
+            } '4' {
+                Get-EventID
+            }
         }
         pause
     }
-    until ($selection -eq 'q')
 }
 Start-MainLoop
 #-----------------------------------------------------------------------------------------------------------------------------------------
