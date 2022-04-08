@@ -15,7 +15,8 @@ using namespace System.Management.Automation.Host
 function Get-AccountActivity {
     # Check if account activity folder exists. Create if it doesn't. 
     $local:Dir = "C:\collections\account_activity"
-    if (-Not (Test-Path -Path $local:Dir)) { # TODO: Seems like this if logic is repeadted in a lot of functions. Maybe pull to it's own function?
+    if (-Not (Test-Path -Path $local:Dir)) { # TODO: Seems like this if logic is repeated in a lot of functions. Maybe pull to it's own function?
+
         New-Item -Path "c:\collections" -Name "account_activity" -ItemType Directory
     }
     
